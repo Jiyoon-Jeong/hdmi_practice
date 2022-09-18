@@ -7,9 +7,6 @@
 #define SIZE 8
 #define Out_default 1
 
-// implement func 
-void Display();
-
 // global variable for queue
 int Front = -1;
 int Rear = -1;
