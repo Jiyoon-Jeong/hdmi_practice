@@ -3,6 +3,12 @@
 2. Remember orders that you plug in
 3. When plug out, reconnect to last one */
 
+/* 결국, 스택으로 가장 나중을 보여주되 큐를 섞어서 중간값을 
+삭제했을 시 가장 마지막 남은 값은 냅두고 그 뒤부터 하나씩 가져오게*/
+
+// history로 (시간) 관리
+// 단지 플러그 단자로만 꽂으면 알기가 어떤게 먼저이고 나중인지 알기가 어려움. 
+
 #include <stdio.h>
 #include <stdlib.h> // for exit(0)
 #define SIZE 8
@@ -28,8 +34,8 @@ int main()
 		printf("1. To Plugin \n");
 		printf("2. To Unplug \n");
 		printf("3. Display Current State \n");
-		printf("4. Exist\n");
-		printf("Enter for operations :");
+		printf("4. Exit\n");
+		printf("Enter for operations : ");
 		scanf("%d", &Choice);
 		switch (Choice)
 		{
@@ -60,28 +66,31 @@ void Plugin()
 	int plugin_num;
 	if (Rear == SIZE - 1)
 		//printf("Overflow \n"); // can die, 1. 큰 데이터 auto variable x 2. 
-		printf("Turn to Default Setting: %d", Out_default);
+		printf("Element is Packed. Please try other operation");
 	else
 	{
 		if (Front == -1)
 			Front = 0;
+		printf("\n");
 		printf("Which location to plugin HDMI: ");
 		scanf("%d", &plugin_num);
 		Rear = Rear + 1;
 		Input[Rear] = plugin_num;
 	}
+	printf("\n");
 }
 
-void Unplug()
+void Unplug() // FIFO
 {
 	if (Front == -1 || Front > Rear)
 		//printf("Underflow \n");
-		printf("Turn to Default Setting: %d", Out_default);
-	else
+		printf("It's Empty, turn to default setting: %d", Out_default);
+	else // FIFO
 	{
-		printf("Which location to unplug : %d \n", Input[Front]);
+		printf("Which location to unplug : %d \n \n", Input[Front]);
 		Front = Front + 1;
 	}
+
 }
 
 void Display()
@@ -91,8 +100,9 @@ void Display()
 	else
 	{
 		printf("Current Display (Queue): \n");
+
 		for (int i = Front; i <= Rear; i++)
-			printf("%d", Input[i]);
+			printf(" %d ", Input[i]);
 		printf("\n");
 	}
 }
