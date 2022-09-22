@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 #include <stdlib.h> // for exit(0)
+//#include <memory.h> // initialize array func (memset func)
+#include <string.h> // for memory.h
 
 #define SIZE 8
 #define Out_default 1
@@ -21,19 +23,25 @@
 int Rear = -1;
 int Front = -1;
 char Input[SIZE]; // 활용은 큐냐 스택이냐 선택에 따라 다름
-int temp[SIZE];
 int plugin_num;
-int new_plugnum;
+int temp[SIZE];
 
 // queue func
 void Plugin();
-int Unplug();
+void Unplug();
 void Display();
 
 
 int main()
 {
     int choice;
+	for (int i=0;i<SIZE;i++) // initialize arrary
+	{
+		Input[i] = 0;
+		//printf("%d ",Input[i]);
+	}
+		
+
     while(1)
     {
 	    printf("1. To Plugin \n");
@@ -65,7 +73,7 @@ int main()
 void Plugin()
 {
     //int new_plugnum;
-	if (Rear == SIZE - 1)
+	if (Front == SIZE - 1)
 		//printf("Overflow \n"); // can die, 1. Big data: auto variable should not use
 		printf("Element is Packed. Please try other operation");
 	else
@@ -77,8 +85,6 @@ void Plugin()
 		scanf("%d", &plugin_num);
 		Rear = Rear + 1;
 		Input[Rear] = plugin_num;
-
-		new_plugnum = plugin_num;
 	}
 	printf("\n");
 }
@@ -87,7 +93,7 @@ void Plugin()
 // {
 // 	if (Front == -1 || Front > Rear)
 // 		//printf("Underflow \n");
-//		printf("It's Empty, turn to default setting: %d", Out_default);
+// 		printf("It's Empty, turn to default setting: %d", Out_default);
 // 	else // FIFO
 // 	{
 // 		printf("Which location to unplug : %d \n \n", Input[Front]);
@@ -95,7 +101,20 @@ void Plugin()
 // 	}
 // }
 
-int Unplug() // implement delete element in the middle
+// void Unplug() // LIFO 
+// {
+// 	if (Front == -1 || Front > Rear)
+// 		//printf("Underflow \n");
+// 		printf("It's Empty, turn to default setting: %d", Out_default);
+// 	else // LIFO
+// 	{
+// 		printf("Which location to unplug : %d \n \n", Input[Rear]);
+		
+// 		Rear = Rear - 1;
+// 	}
+// }
+
+void Unplug() // implement delete element in the middle
 {
     // LIFO
 	// printf("Which location to unplug: \n", Input[Rear]);
@@ -106,7 +125,7 @@ int Unplug() // implement delete element in the middle
 	printf("\n");
 	//printf("Unplug location: %d \n", plugin_num); // plugin_num is the last number you put
 	printf("Unplug location: \n"); 
-	//scanf("%d", &Input[Front++]); // 1 2 3 -> 2 out: 0 0 . rear++ 1,2,3,-> 1,2,3,0.
+	//scanf("%d", &Input[Front++]); // 1 2 3 -> 2 out: 0 0 . Rear++ 1,2,3,-> 1,2,3,0.
 	scanf("%d", &del_ele);
 	
 	for(i = 0; i < SIZE; i++)
@@ -122,29 +141,41 @@ int Unplug() // implement delete element in the middle
 	for(i = idx; i < SIZE-1 ; i++) // work for only Input[6]
 		Input[i] = Input[i+1];
 
+	if (Rear == -1)
+	{
+		printf("Underflow!\n"); //rear -1 일때 빼면 안됨. error case.
+	}
+	else
+		Rear = Rear - 1;  
+
 	//Input[i] = 0; // last a[7] should be 0 after a num out. if this is not exist, critical bug issue comes out.
 	
-	for (i = SIZE -2; i>=0;i--) // 12450
-		Input[i+1] = Input[i];
-		Input[i+1] = 0; 
-
-	printf("Current Input : "); // for debugging
-	for(i = SIZE-1; i >= 0 ; i--)	//00054210	(for i=0;i<SIZE;i++) 01245000
-		printf("%d ",Input[i]); // 2,5,6,0,7... (중간에 0이 안지워짐)
+	// for (i = SIZE -2; i>=0;i--) // 01245
+	// 	Input[i+1] = Input[i];
+	// Input[i+1] = 0; 
 	
-
-	// for (int i = 0; i <SIZE-1 ; i++)
+	// printf("Current Input : "); // for debugging
+	// for(i = SIZE-1; i >= 0 ; i--)	//00054210	(for i=0;i<SIZE;i++) 01245000
+	// 	printf("%d ",Input[i]); // 2,5,6,0,7... (중간에 0이 안지워짐)
+	
+	// for (i = 0; i <SIZE-1 ; i++) // 124503 
 	// 	Input[i] = Input[i+1];
 	
-	// Input[i] = new_plugnum; // need to erase 
+	//memcpy(temp, Input, sizeof(int)*SIZE); // copy array to temp. 
+	// want: erase 0 and shift to left = replace 0 to new num whenever get. 
 
+	// for (i=del_ele; i<sizeof(temp) / sizeof(temp[0]);i++)
+	// {
+	// 	temp[i] = temp[i+1];
+	// 	printf("%d ", temp[i]);
+	// }
+
+	
+	
 	// for(int i=0;i<SIZE;i++) // for debugging
 	// 	printf("%d ",Input[i]); 
 
 	printf("\n");
-
-	return 0;
-
 }
 
 void Display()
@@ -156,7 +187,9 @@ void Display()
 		printf("Current Display (Queue): \n");
 
 		for (int i = Front; i <= Rear; i++)
+		//for (Front = SIZE -1; Front >= 0 ; Front --)
 			printf(" %d ", Input[i]);
+			//printf("%d ", Input[Front]);
 		printf("\n");
 	}
 	printf("\n");
